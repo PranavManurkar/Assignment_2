@@ -1,0 +1,134 @@
+# LAMMPS input script - Al-Cr-Co System
+# Structure: HCP, Temperature: 350K
+# Group 1: Al-Co-Cr system - Assignment 2, MM309
+
+# ============================================================
+# VARIABLE DEFINITIONS
+# ============================================================
+variable        structure string HCP
+variable        temp equal 350
+variable        structure_file string structure_hcp.data
+
+# ============================================================
+# INITIALIZATION
+# ============================================================
+units           metal
+atom_style      atomic
+boundary        p p p
+
+# Read structure
+read_data       ${structure_file}
+
+# ============================================================
+# INTERATOMIC POTENTIAL (MEAM)
+# ============================================================
+# Element order: Al Co Cr (alphabetical, matches structure file)
+# Make sure library.meam and CrCoAl.meam are in the same directory
+pair_style      meam
+pair_coeff      * * library.meam Al Co Cr CrCoAl.meam Al Co Cr
+
+# ============================================================
+# NEIGHBOR SETTINGS
+# ============================================================
+neighbor        2.0 bin
+neigh_modify    every 1 delay 0 check yes
+
+# ============================================================
+# COMPUTE DEFINITIONS
+# ============================================================
+variable        natoms equal atoms
+variable        area_xy equal lx*ly
+
+# ============================================================
+# OUTPUT SETTINGS
+# ============================================================
+thermo          100
+thermo_style    custom step temp pe ke etotal press vol lx ly lz pxx pyy pzz
+
+log             log.${structure}.${temp}K.lammps
+
+# ============================================================
+# STAGE 1: ENERGY MINIMIZATION
+# ============================================================
+print           "============================================"
+print           "STAGE 1: Energy Minimization"
+print           "============================================"
+
+min_style       cg
+minimize        1.0e-8 1.0e-10 10000 100000
+
+variable        pe_min equal pe
+variable        pe_min_atom equal pe/v_natoms
+
+print           "Minimized PE: ${pe_min} eV"
+print           "Minimized PE/atom: ${pe_min_atom} eV/atom"
+
+# ============================================================
+# STAGE 2: NPT EQUILIBRATION
+# ============================================================
+print           "============================================"
+print           "STAGE 2: NPT Equilibration at ${temp} K"
+print           "============================================"
+
+reset_timestep  0
+velocity        all create ${temp} 87654 dist gaussian
+timestep        0.001
+
+fix             npt1 all npt temp ${temp} ${temp} 0.1 iso 0.0 0.0 1.0
+run             30000
+unfix           npt1
+
+# ============================================================
+# STAGE 3: NPT PRODUCTION RUN
+# ============================================================
+print           "============================================"
+print           "STAGE 3: NPT Production Run at ${temp} K"
+print           "============================================"
+
+reset_timestep  0
+fix             npt2 all npt temp ${temp} ${temp} 0.1 iso 0.0 0.0 1.0
+
+variable        pe_step equal pe
+variable        pe_atom_step equal pe/v_natoms
+variable        vol_step equal vol
+variable        lx_step equal lx
+variable        ly_step equal ly
+variable        lz_step equal lz
+
+fix             ave_pe all ave/time 10 100 1000 v_pe_atom_step &
+                file pe_vs_time.${structure}.${temp}K.dat
+
+fix             ave_vol all ave/time 10 100 1000 v_vol_step v_lx_step v_ly_step v_lz_step &
+                file vol_vs_time.${structure}.${temp}K.dat
+
+run             50000
+
+# ============================================================
+# EXTRACT RESULTS
+# ============================================================
+variable        pe_avg equal f_ave_pe
+variable        lx_final equal lx
+variable        ly_final equal ly
+variable        lz_final equal lz
+variable        vol_final equal vol
+variable        area_final equal v_lx_final*v_ly_final
+
+print           ""
+print           "============================================"
+print           "FINAL RESULTS: ${structure} at ${temp} K"
+print           "============================================"
+print           "Number of atoms:      ${natoms}"
+print           "Avg PE/atom:          ${pe_avg} eV/atom"
+print           "Final volume:         ${vol_final} A^3"
+print           "Final box:            ${lx_final} x ${ly_final} x ${lz_final} A"
+print           "Interface area (xy):  ${area_final} A^2"
+print           "============================================"
+
+print           "${structure} ${temp} ${natoms} ${pe_avg} ${vol_final} ${lx_final} ${ly_final} ${lz_final} ${area_final}" &
+                append results_summary.txt
+
+unfix           npt2
+unfix           ave_pe
+unfix           ave_vol
+
+print           "Simulation complete!"
