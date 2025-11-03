@@ -1,0 +1,73 @@
+======================================================================
+COMPREHENSIVE ANALYSIS SUMMARY
+Al-Cr-Co Ternary System (Group 1)
+======================================================================
+
+1. LATTICE PARAMETER ANALYSIS
+----------------------------------------------------------------------
+
+At 100K:
+  Average lattice parameter: 3.7248 A
+  Range: 3.4462 - 4.0550 A
+  Std deviation: 0.1377 A
+
+At 350K:
+  Average lattice parameter: 3.7405 A
+  Range: 3.4077 - 4.0644 A
+  Std deviation: 0.1431 A
+
+At 550K:
+  Average lattice parameter: 3.7554 A
+  Range: 3.4160 - 4.0753 A
+  Std deviation: 0.1451 A
+
+
+2. STACKING FAULT ENERGY ANALYSIS
+----------------------------------------------------------------------
+
+gamma_ISF:
+  At 100K:
+    Average: 8241.72 mJ/m^2
+    Range: -5926.74 - 15955.61 mJ/m^2
+  At 350K:
+    Average: 2764.66 mJ/m^2
+    Range: -7507.90 - 12857.31 mJ/m^2
+  At 550K:
+    Average: -389.26 mJ/m^2
+    Range: -9291.52 - 10189.78 mJ/m^2
+
+gamma_ESF:
+  At 100K:
+    Average: 6435.49 mJ/m^2
+    Range: -4427.05 - 12384.59 mJ/m^2
+  At 350K:
+    Average: 2247.56 mJ/m^2
+    Range: -5551.04 - 9276.12 mJ/m^2
+  At 550K:
+    Average: -152.08 mJ/m^2
+    Range: -5583.73 - 7952.54 mJ/m^2
+
+gamma_Twin:
+  At 100K:
+    Average: 4120.86 mJ/m^2
+    Range: -2963.37 - 7977.81 mJ/m^2
+  At 350K:
+    Average: 1382.33 mJ/m^2
+    Range: -3753.95 - 6428.66 mJ/m^2
+  At 550K:
+    Average: -194.63 mJ/m^2
+    Range: -4645.76 - 5094.89 mJ/m^2
+
+
+3. COMPOSITION EFFECTS (at 350K)
+----------------------------------------------------------------------
+
+Highest ISF: Comp02_Al00_Co100_Cr00
+  Al=0.00, Co=1.00, Cr=0.00
+  ISF = 12857.31 mJ/m^2
+
+Lowest ISF: Comp12_Al00_Co75_Cr25
+  Al=0.00, Co=0.75, Cr=0.25
+  ISF = -7507.90 mJ/m^2
+
+======================================================================
